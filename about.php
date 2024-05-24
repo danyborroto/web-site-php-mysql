@@ -1,0 +1,4 @@
+<?php include("./template/header.php") ?>
+
+<h1>About</h1>
+<?php include("./template/footer.php") ?>
