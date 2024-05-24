@@ -1,14 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Site PHP+MySQL</title>
-</head>
+include("template/header.php");
 
-<body>
-
-</body>
-
-</html>
+include("template/footer.php");
