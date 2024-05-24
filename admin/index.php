@@ -1,3 +1,9 @@
+<?php
+if ($_POST) {
+    header('Location:inicio.php');
+}
+?>
+
 <!doctype html>
 <html lang="en">
 
@@ -24,7 +30,7 @@
                         Login
                     </div>
                     <div class="card-body">
-                        <form method="post">
+                        <form action="index.php" method="post">
                             <div class="form-group">
                                 <label for="userName">User</label>
                                 <input type="text" class="form-control" name="userName" placeholder="Enter username">
