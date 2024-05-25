@@ -5,6 +5,7 @@ $bookId = (isset($_POST['bookID'])) ? $_POST['bookID'] : "";
 $bookName = (isset($_POST['bookName'])) ? $_POST['bookName'] : "";
 $bookCover = (isset($_FILES['bookCover'])) ? $_FILES['bookCover']['name'] : "";
 $action = (isset($_POST['action'])) ? $_POST['action'] : "";
+$bookActionId = (isset($_POST['bookActionID'])) ? $_POST['bookActionID'] : "";
 
 $host = "localhost";
 $db = "sitio";
@@ -13,9 +14,7 @@ $password = "";
 
 include("../config/db.php");
 
-$sentenciaSQL = $conection->prepare("SELECT * FROM libros");
-$sentenciaSQL->execute();
-$bookList = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+
 
 switch ($action) {
     case 'save':
@@ -26,10 +25,27 @@ switch ($action) {
         $sentenciaSQL->execute();
         break;
     case 'edit':
-        echo "Action edit";
+        $sentenciaSQL = $conection->prepare("UPDATE libros SET nombre=:nombre, cover=:cover WHERE id=:id");
+        $sentenciaSQL->bindParam(':nombre', $bookName);
+        $sentenciaSQL->bindParam(':cover', $bookCover);
+        $sentenciaSQL->bindParam(':id', $bookId);
+        $sentenciaSQL->execute();
         break;
     case 'cancel':
         echo "Action cancel";
+        break;
+    case 'Select':
+        $sentenciaSQL = $conection->prepare("SELECT * FROM libros WHERE id=:id");
+        $sentenciaSQL->bindParam(':id', $bookActionId);
+        $sentenciaSQL->execute();
+        $book = $sentenciaSQL->fetch(PDO::FETCH_LAZY);
+        $bookName = $book['nombre'];
+        $bookCover = $book['imagen'];
+        break;
+    case 'Delete':
+        $sentenciaSQL = $conection->prepare("DELETE FROM libros WHERE id=:id");
+        $sentenciaSQL->bindParam(':id', $bookActionId);
+        $sentenciaSQL->execute();
         break;
 }
 ?>
@@ -42,14 +58,15 @@ switch ($action) {
             <form method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label>ID:</label>
-                    <input type="text" class="form-control" name="bookID" placeholder="ID">
+                    <input type="text" class="form-control" name="bookID" value="<?php echo $bookActionId; ?>" placeholder="ID">
                 </div>
                 <div class="form-group">
                     <label>Name:</label>
-                    <input type="text" class="form-control" name="bookName" placeholder="Book name">
+                    <input type="text" class="form-control" name="bookName" value="<?php echo $bookName; ?>" placeholder="Book name">
                 </div>
                 <div class="form-group">
                     <label>Cover:</label>
+                    <?php echo $bookCover; ?>
                     <input type="file" class="form-control" name="bookCover" placeholder="File...">
                 </div>
                 <div class="btn-group" role="group" aria-label="">
@@ -74,13 +91,21 @@ switch ($action) {
         </thead>
         <tbody>
             <?php
-
+            $sentenciaSQL = $conection->prepare("SELECT * FROM libros");
+            $sentenciaSQL->execute();
+            $bookList = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
             foreach ($bookList as $libro) { ?>
                 <tr>
                     <td><?php echo $libro['id'] ?></td>
                     <td><?php echo $libro['nombre'] ?></td>
                     <td><?php echo $libro['cover'] ?></td>
-                    <td>Select | Delete</td>
+                    <td>
+                        <form method="post">
+                            <input type="hidden" name="bookActionID" value="<?php echo $libro['id']; ?>">
+                            <input type="submit" name="action" value="Select" class="btn btn-primary">
+                            <input type="submit" name="action" value="Delete" class="btn btn-danger">
+                        </form>
+                    </td>
                 </tr>
             <?php }
             ?>
