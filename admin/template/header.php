@@ -16,8 +16,8 @@
     <nav class="navbar navbar-expand navbar-light bg-light">
         <div class="nav navbar-nav">
             <a class="nav-item nav-link" href="<?php echo $url; ?>/admin/inicio.php">Admin </a>
-            <a class="nav-item nav-link" href="#">Books</a>
-            <a class="nav-item nav-link" href="#">Log out</a>
+            <a class="nav-item nav-link" href="<?php echo $url; ?>/admin/seccion/productos.php">Books</a>
+            <a class="nav-item nav-link" href="<?php echo $url; ?>/admin/seccion/logout.php">Log out</a>
             <a class="nav-item nav-link" href="<?php echo $url; ?>">See web site</a>
         </div>
     </nav>
