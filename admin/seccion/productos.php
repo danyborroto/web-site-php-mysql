@@ -6,8 +6,32 @@ $bookName = (isset($_POST['bookName'])) ? $_POST['bookName'] : "";
 $bookCover = (isset($_FILES['bookCover'])) ? $_FILES['bookCover']['name'] : "";
 $action = (isset($_POST['action'])) ? $_POST['action'] : "";
 
-echo $bookId . "<br/>" . $bookName . "<br/>" . $bookCover . "<br/>" . $action;
+$host = "localhost";
+$db = "sitio";
+$user = "root";
+$password = "";
 
+include("../config/db.php");
+
+$sentenciaSQL = $conection->prepare("SELECT * FROM libros");
+$sentenciaSQL->execute();
+$bookList = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+
+switch ($action) {
+    case 'save':
+
+        $sentenciaSQL = $conection->prepare("INSERT INTO libros (nombre, cover) VALUES (:nombre, :cover)");
+        $sentenciaSQL->bindParam(':nombre', $bookName);
+        $sentenciaSQL->bindParam(':cover', $bookCover);
+        $sentenciaSQL->execute();
+        break;
+    case 'edit':
+        echo "Action edit";
+        break;
+    case 'cancel':
+        echo "Action cancel";
+        break;
+}
 ?>
 <div class="col-md-5">
     <div class="card">
@@ -49,12 +73,18 @@ echo $bookId . "<br/>" . $bookName . "<br/>" . $bookCover . "<br/>" . $action;
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>2</td>
-                <td>PHP</td>
-                <td>imagen.jpg</td>
-                <td>Select | Delete</td>
-            </tr>
+            <?php
+
+            foreach ($bookList as $libro) { ?>
+                <tr>
+                    <td><?php echo $libro['id'] ?></td>
+                    <td><?php echo $libro['nombre'] ?></td>
+                    <td><?php echo $libro['cover'] ?></td>
+                    <td>Select | Delete</td>
+                </tr>
+            <?php }
+            ?>
+
         </tbody>
     </table>
 </div>
