@@ -139,7 +139,7 @@ switch ($action) {
                 <tr>
                     <td><?php echo $libro['id'] ?></td>
                     <td><?php echo $libro['nombre'] ?></td>
-                    <td><?php echo $libro['cover'] ?></td>
+                    <td><img src="../../img/<?php echo $libro['cover'] ?>" style="height: 150px;" alt="<?php echo $libro['cover'] ?>"></td>
                     <td>
                         <form method="post">
                             <input type="hidden" name="bookActionID" value="<?php echo $libro['id']; ?>">
