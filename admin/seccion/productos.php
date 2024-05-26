@@ -23,7 +23,7 @@ switch ($action) {
         $sentenciaSQL->bindParam(':nombre', $bookName);
 
         $date = new DateTime();
-        $fileName = ($bookName != "") ? $date->getTimeStamp() . "_" . $bookCover : $bookCover;
+        $fileName = ($bookName != "") ? $date->getTimeStamp() . "_" . $bookCover : "imagen.jpg";
         $tmpImage = $_FILES['bookCover']['tmp_name'];
         if ($tmpImage != "") {
             move_uploaded_file($tmpImage, "../../img/" . $fileName);
@@ -59,6 +59,16 @@ switch ($action) {
         $bookCover = $book['cover'];
         break;
     case 'Delete':
+        $sentenciaSQL = $conection->prepare("SELECT cover FROM libros WHERE id=:id");
+        $sentenciaSQL->bindParam(':id', $bookActionId);
+        $sentenciaSQL->execute();
+        $book = $sentenciaSQL->fetch((PDO::FETCH_LAZY));
+
+        if (isset($book["cover"]) && ($book['cover'] != "imagen.jpg")) {
+            if (file_exists("../../img/" . $book['cover'])) {
+                unlink("../../img/" . $book['cover']);
+            }
+        }
         $sentenciaSQL = $conection->prepare("DELETE FROM libros WHERE id=:id");
         $sentenciaSQL->bindParam(':id', $bookActionId);
         $sentenciaSQL->execute();
