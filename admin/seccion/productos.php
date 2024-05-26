@@ -21,15 +21,31 @@ switch ($action) {
 
         $sentenciaSQL = $conection->prepare("INSERT INTO libros (nombre, cover) VALUES (:nombre, :cover)");
         $sentenciaSQL->bindParam(':nombre', $bookName);
-        $sentenciaSQL->bindParam(':cover', $bookCover);
+
+        $date = new DateTime();
+        $fileName = ($bookName != "") ? $date->getTimeStamp() . "_" . $bookCover : $bookCover;
+        $tmpImage = $_FILES['bookCover']['tmp_name'];
+        if ($tmpImage != "") {
+            move_uploaded_file($tmpImage, "../../img/" . $fileName);
+        }
+
+        $sentenciaSQL->bindParam(':cover', $fileName);
         $sentenciaSQL->execute();
         break;
     case 'edit':
-        $sentenciaSQL = $conection->prepare("UPDATE libros SET nombre=:nombre, cover=:cover WHERE id=:id");
+        $sentenciaSQL = $conection->prepare("UPDATE libros SET nombre=:nombre WHERE id=:id");
         $sentenciaSQL->bindParam(':nombre', $bookName);
-        $sentenciaSQL->bindParam(':cover', $bookCover);
         $sentenciaSQL->bindParam(':id', $bookId);
         $sentenciaSQL->execute();
+
+        if ($bookCover != "") {
+
+            $sentenciaSQL = $conection->prepare("UPDATE libros SET cover=:cover WHERE id=:id");
+            $sentenciaSQL->bindParam(':cover', $bookCover);
+            $sentenciaSQL->bindParam(':id', $bookId);
+            $sentenciaSQL->execute();
+        }
+
         break;
     case 'cancel':
         echo "Action cancel";
@@ -40,7 +56,7 @@ switch ($action) {
         $sentenciaSQL->execute();
         $book = $sentenciaSQL->fetch(PDO::FETCH_LAZY);
         $bookName = $book['nombre'];
-        $bookCover = $book['imagen'];
+        $bookCover = $book['cover'];
         break;
     case 'Delete':
         $sentenciaSQL = $conection->prepare("DELETE FROM libros WHERE id=:id");
@@ -65,8 +81,7 @@ switch ($action) {
                     <input type="text" class="form-control" name="bookName" value="<?php echo $bookName; ?>" placeholder="Book name">
                 </div>
                 <div class="form-group">
-                    <label>Cover:</label>
-                    <?php echo $bookCover; ?>
+                    <label>Cover:<?php echo $bookCover; ?></label>
                     <input type="file" class="form-control" name="bookCover" placeholder="File...">
                 </div>
                 <div class="btn-group" role="group" aria-label="">
