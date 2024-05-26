@@ -40,8 +40,24 @@ switch ($action) {
 
         if ($bookCover != "") {
 
+            $date = new DateTime();
+            $fileName = ($bookName != "") ? $date->getTimeStamp() . "_" . $bookCover : "imagen.jpg";
+            $tmpImage = $_FILES['bookCover']['tmp_name'];
+            move_uploaded_file($tmpImage, "../../img/" . $fileName);
+
+            $sentenciaSQL = $conection->prepare("SELECT cover FROM libros WHERE id=:id");
+            $sentenciaSQL->bindParam(':id', $bookId);
+            $sentenciaSQL->execute();
+            $book = $sentenciaSQL->fetch((PDO::FETCH_LAZY));
+
+            if (isset($book["cover"]) && ($book['cover'] != "imagen.jpg")) {
+                if (file_exists("../../img/" . $book['cover'])) {
+                    unlink("../../img/" . $book['cover']);
+                }
+            }
+
             $sentenciaSQL = $conection->prepare("UPDATE libros SET cover=:cover WHERE id=:id");
-            $sentenciaSQL->bindParam(':cover', $bookCover);
+            $sentenciaSQL->bindParam(':cover', $fileName);
             $sentenciaSQL->bindParam(':id', $bookId);
             $sentenciaSQL->execute();
         }
